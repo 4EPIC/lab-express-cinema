@@ -85,7 +85,25 @@ const Movie = require("../models/Movie.model");
 
 const mongoose = require("mongoose");
 
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const MONGO_URI =
+  process.env.MONGODB_URI ||
+  "mongodb+srv://4EPIC:cgee81104@cluster0.mbel6.mongodb.net/ovellesnegres?authSource=admin&replicaSet=atlas-4y2vsw-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true";
+
+mongoose
+  .connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+  })
+  .then((x) => {
+    console.log(
+      `Connected to Mongo! Database name: "${x.connections[0].name}"`
+    );
+    Movie.insertMany(movies).then(() => {
+      console.log("all good");
+    });
+  })
+  .catch((err) => {
+    console.error("Error connecting to mongo: ", err);
+  });
